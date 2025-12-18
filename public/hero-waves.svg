@@ -1,0 +1,32 @@
+<svg width="420" height="200" viewBox="0 0 420 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0 50 Q 105 0, 210 50 T 420 50 L 420 200 L 0 200 Z" fill="url(#wave-gradient-1)" opacity="0.15"/>
+  <path d="M0 80 Q 105 30, 210 80 T 420 80 L 420 200 L 0 200 Z" fill="url(#wave-gradient-2)" opacity="0.12"/>
+  <path d="M0 110 Q 105 60, 210 110 T 420 110 L 420 200 L 0 200 Z" fill="url(#wave-gradient-3)" opacity="0.1"/>
+  <defs>
+    <linearGradient id="wave-gradient-1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="wave-gradient-2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#EF4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="wave-gradient-3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#06B6D4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#10B981;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="35" y="5" width="50" height="110" rx="25" fill="#1F2937"/>
+  <rect x="35" y="5" width="50" height="110" rx="25" fill="url(#barber-stripes)"/>
+  <circle cx="60" cy="15" r="10" fill="#F59E0B"/>
+  <circle cx="60" cy="105" r="10" fill="#F59E0B"/>
+  <defs>
+    <pattern id="barber-stripes" x="0" y="0" width="20" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect x="0" y="0" width="10" height="40" fill="#EF4444"/>
+      <rect x="10" y="0" width="10" height="40" fill="#06B6D4"/>
+    </pattern>
+  </defs>
+</svg>
+

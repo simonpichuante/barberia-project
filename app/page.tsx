@@ -1,65 +1,290 @@
+"use client";
+
 import Image from "next/image";
+import { useState, useEffect } from "react";
+
+type Cliente = {
+  rut: string;
+  nombre: string;
+  apellido: string;
+  correo: string;
+  celular: string;
+};
+
+type Barbero = {
+  id_barbero: number;
+  nombre: string;
+  usuario: string;
+  activo: boolean;
+};
+
+type Servicio = {
+  id_servicio: number;
+  nombre: string;
+  duracion_min: number;
+  precio: number;
+};
+
+type Cita = {
+  id_cita: number;
+  cliente_nombre: string;
+  barbero_nombre: string;
+  servicio_nombre: string;
+  fecha_programada: string;
+  estado: string;
+};
 
 export default function Home() {
+  const [activeSection, setActiveSection] = useState<string>("clientes");
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = async (endpoint: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api${endpoint}`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      const result = await response.json();
+      setData(Array.isArray(result) ? result : [result]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error desconocido");
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const endpoints: Record<string, string> = {
+      clientes: "/clientes/",
+      barberos: "/barberos/",
+      servicios: "/servicios/",
+      citas: "/citas/",
+    };
+    if (endpoints[activeSection]) {
+      fetchData(endpoints[activeSection]);
+    }
+  }, [activeSection]);
+
+  const renderTable = () => {
+    if (loading) return <div>Cargando...</div>;
+    if (error) return <div className="error"><h3>Error al cargar datos</h3><p>{error}</p></div>;
+    if (data.length === 0) return <p>No hay datos disponibles</p>;
+
+    switch (activeSection) {
+      case "clientes":
+        return (
+          <table>
+            <thead>
+              <tr>
+                <th>RUT</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Correo</th>
+                <th>Celular</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((c: Cliente, idx) => (
+                <tr key={idx}>
+                  <td>{c.rut || ""}</td>
+                  <td>{c.nombre || ""}</td>
+                  <td>{c.apellido || ""}</td>
+                  <td>{c.correo || ""}</td>
+                  <td>{c.celular || ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "barberos":
+        return (
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Usuario</th>
+                <th>Activo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((b: Barbero, idx) => (
+                <tr key={idx}>
+                  <td>{b.id_barbero || ""}</td>
+                  <td>{b.nombre || ""}</td>
+                  <td>{b.usuario || ""}</td>
+                  <td>{b.activo ? "Sí" : "No"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "servicios":
+        return (
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Duración</th>
+                <th>Precio</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((s: Servicio, idx) => (
+                <tr key={idx}>
+                  <td>{s.id_servicio || ""}</td>
+                  <td>{s.nombre || ""}</td>
+                  <td>{s.duracion_min || ""} min</td>
+                  <td>${s.precio || ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "citas":
+        return (
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Barbero</th>
+                <th>Servicio</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((c: Cita, idx) => (
+                <tr key={idx}>
+                  <td>{c.id_cita || ""}</td>
+                  <td>{c.cliente_nombre || ""}</td>
+                  <td>{c.barbero_nombre || ""}</td>
+                  <td>{c.servicio_nombre || ""}</td>
+                  <td>{c.fecha_programada ? new Date(c.fecha_programada).toLocaleString() : ""}</td>
+                  <td>{c.estado || ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        );
+      case "agenda":
+        return <p>Contenido de Agenda no implementado.</p>;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <header>
+        <div className="header-top">
+          <div className="brand">
+            <h1>Barbería</h1>
+            <p>Gestión Administrativa</p>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+        <div className="hero">
+          <div className="hero-content">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              src="/barber-pole.svg"
+              alt="Barber pole"
+              width={120}
+              height={120}
+              className="hero-illustration"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <div>
+              <h2>Tu salón, más organizado y con estilo</h2>
+              <p className="hero-subtext">Administra clientes, barberos, citas y servicios.</p>
+            </div>
+          </div>
+          <Image
+            src="/hero-waves.svg"
+            alt="ondas decorativas"
+            width={420}
+            height={200}
+            className="hero-waves"
+            aria-hidden="true"
+          />
         </div>
+      </header>
+      <nav>
+        <ul>
+          <li>
+            <a
+              href="#"
+              className={activeSection === "clientes" ? "active" : ""}
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveSection("clientes");
+              }}
+            >
+              Clientes
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className={activeSection === "barberos" ? "active" : ""}
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveSection("barberos");
+              }}
+            >
+              Barberos
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className={activeSection === "servicios" ? "active" : ""}
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveSection("servicios");
+              }}
+            >
+              Servicios
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className={activeSection === "citas" ? "active" : ""}
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveSection("citas");
+              }}
+            >
+              Citas
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              className={activeSection === "agenda" ? "active" : ""}
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveSection("agenda");
+              }}
+            >
+              Agenda
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <main>
+        <h2>{activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}</h2>
+        <div id="list-container">{renderTable()}</div>
       </main>
-    </div>
+      <footer>
+        <p>&copy; 2025 Barbería. Todos los derechos reservados.</p>
+      </footer>
+    </>
   );
 }
